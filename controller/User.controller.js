@@ -70,7 +70,7 @@ const register = async (req, res) => {
         if (user) {
             return res.status(400).json({ errors: [{ msg: 'Admin already exist' }] });
         } else {
-            const newUser = new Adwmin({
+            const newUser = new Admin({
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
