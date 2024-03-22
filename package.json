@@ -1,7 +1,7 @@
 {
-  "name": "GajabaBackend",
+  "name": "socialMediaService",
   "version": "1.0.0",
-  "description": "GajabaBackend",
+  "description": "socialMediaService",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
