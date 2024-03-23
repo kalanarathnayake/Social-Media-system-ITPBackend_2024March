@@ -38,10 +38,11 @@ UserSchema.methods.generateAuthToken = async function () {
     const user = this;
     const secret = 'testuser';
 
-    const authToken = jwt.sign({ _id: user._id }, secret);
-    user.authToken = authToken;
+    const token = jwt.sign({ _id: user._id }, secret);
+    user.authToken = token;
     await user.save();
-    return authToken;
+
+    return { _id: user._id, token };
 };
 
 module.exports = Admin = mongoose.model('Admin', UserSchema);

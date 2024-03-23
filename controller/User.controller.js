@@ -15,36 +15,94 @@ const getAdmin = async (req, res) => {
     }
 };
 
-//Authenticate admin and get token
+// //Authenticate admin and get token
+// const login = async (req, res) => {
+//     const { email, password } = req.body;
+
+//     try {
+//         //See if user Exist
+//         let user = await Admin.findOne({ email: email });
+//         console.log(user);
+//         if (!user) {
+//             return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
+//         }
+
+//         //match the user email and password
+
+//         const isMatch = await bcrypt.compare(password, user.password);
+
+//         if (!isMatch) {
+//             return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
+//         }
+
+//         //Return jsonwebtoken
+
+//         const token = await user.generateAuthToken();
+//         return res.status(200).json({ tokenId: token });
+//     } catch (err) {
+//         //Something wrong with the server
+//         console.error(err.message);
+//         return res.status(500).send('Server Error');
+//     }
+// };
+
+// const getUserByName = async (req, res) => {
+//     const { email } = req.body;
+
+//     try {
+//         // See if user exists
+//         let user = await Admin.findOne({ email: email });
+
+//         if (!user) {
+//             return res.status(404).json({ error: 'User not found' });
+//         }
+
+//         // Return the user's name
+//         return res.status(200).json({ MongoId: user._id });
+//     } catch (err) {
+//         // Log the error for debugging purposes
+//         console.error('Error retrieving user:', err);
+
+//         // Return a more detailed error message
+//         return res.status(500).json({ error: 'Server Error', message: err.message });
+//     }
+// };
+
 const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        //See if user Exist
+        // Authenticate admin
         let user = await Admin.findOne({ email: email });
-        console.log(user);
+
+        // Check if user exists
         if (!user) {
             return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
         }
 
-        //match the user email and password
-
+        // Match the user email and password
         const isMatch = await bcrypt.compare(password, user.password);
-
         if (!isMatch) {
             return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
         }
 
-        //Return jsonwebtoken
-
+        // Generate jsonwebtoken
         const token = await user.generateAuthToken();
-        return res.status(200).json({ tokenId: token });
+
+        // Return user's ID, first name, and token
+        return res.status(200).json({
+            tokenId: token,
+            userId: user._id,
+        });
     } catch (err) {
-        //Something wrong with the server
-        console.error(err.message);
-        return res.status(500).send('Server Error');
+        // Log the error for debugging purposes
+        console.error('Error during login:', err);
+
+        // Return a more detailed error message
+        return res.status(500).json({ error: 'Server Error', message: err.message });
     }
 };
+
 
 // firstName
 // lastName
@@ -110,9 +168,8 @@ const updateUser = async (req, res) => {
                 .then((updatedUser) => res.json(updatedUser))
                 .catch((error) => res.status(400).json("Error: " + error));
         })
-        .catch((error) => res.status(400).json("Error: 1" + error));
+        .catch((error) => res.status(400).json("Error: " + error));
 };
-
 
 //get all ticket records
 const getUsers = async (req, res) => {
@@ -123,7 +180,19 @@ const getUsers = async (req, res) => {
         res.status(500).send("Server Error : " + error);
     }
 }
+const getUserById = async (req, res) => {
+    try {
+        const user = await Admin.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error("Error fetching Iser by ID:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 
 
-module.exports = { getAdmin, login, register, updateUser, getUsers };
+module.exports = { getAdmin, login, register, updateUser, getUsers, getUserById };
